@@ -55,9 +55,10 @@ const dot = (columns, options) => (chartData, i) => {
   });
 };
 
-const shape = (columns, options) => (chartData, i) => {
+const shape = (columns, options, series) => (chartData, i) => {
   const data = chartData.data;
   const meta = chartData.meta || {};
+  series = series || [];
   const extraProps = options.shapeProps(meta);
   return (
     <path
@@ -79,7 +80,9 @@ const shape = (columns, options) => (chartData, i) => {
       stroke={meta.color}
       fill={meta.color}
       className={[extraProps.className, meta.class].join(' ')}
-    />
+    >
+      <title>{series[i] || `Serie ${i+1}`}</title>
+    </path>
   );
 };
 
@@ -105,7 +108,7 @@ const caption = options => col => (
   </text>
 );
 
-const render = (captions, chartData, options = {}) => {
+const render = (captions, chartData, options = {}, series) => {
   if ('object' !== typeof captions || Array.isArray(captions)) {
     throw new Error('caption must be an object');
   }
@@ -122,7 +125,7 @@ const render = (captions, chartData, options = {}) => {
     };
   });
   const groups = [
-    <g key={`g-groups}`}>{chartData.map(shape(columns, options))}</g>
+    <g key={`g-groups}`}>{chartData.map(shape(columns, options, series))}</g>
   ];
   if (options.captions) {
     groups.push(<g key={`poly-captions`}>{columns.map(caption(options))}</g>);

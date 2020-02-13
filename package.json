@@ -1,12 +1,11 @@
 {
-  "name": "react-svg-radar-chart",
+  "name": "@l1tr05/react-svg-radar-chart",
   "version": "1.2.0",
   "description": "A reusable radar chart in SVG.",
   "main": "build/index.js",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "prepublishOnly": "CI=true npm run test",
     "prepare": "npm run build",
     "demo": "node scripts/demo.js",
     "test": "node scripts/test.js --env=jsdom",
@@ -123,5 +122,8 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "directories": {
+    "doc": "docs"
   }
 }

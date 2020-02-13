@@ -90,6 +90,7 @@ class App extends Component {
                 data={data.chart}
                 options={data.options}
                 size={data.size}
+                series={data.series}
                 id={`chart-${index}`}
               />
               {dot.key && (

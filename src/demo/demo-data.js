@@ -1,6 +1,9 @@
 const demoData = [
   {
     name: 'with color',
+    series: [
+      "Opción 1"
+    ],
     captions: {
       // columns
       battery: 'Battery Capacity',

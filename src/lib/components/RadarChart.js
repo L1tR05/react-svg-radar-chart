@@ -40,7 +40,7 @@ const defaultOptions = {
 };
 
 const RadarChart = props => {
-  const { data, captions, options, size = defaultOptions.size, id } = props;
+  const { data, captions, options, size = defaultOptions.size, id, series } = props;
 
   const chartOptions = {
     ...defaultOptions,
@@ -49,7 +49,7 @@ const RadarChart = props => {
   };
 
   const { setViewBox } = chartOptions;
-  const chart = radar(captions, data, chartOptions);
+  const chart = radar(captions, data, chartOptions, series);
 
   return (
     <svg

@@ -50,7 +50,9 @@ const dot = (columns, options) => (chartData, i) => {
         className={[extraProps.className, meta.class].join(' ')}
         onMouseEnter={() => mouseEnter({ key: col.key, value: val, idx: i })}
         onMouseLeave={() => mouseLeave({})}
-      />
+      >
+        <title>{val}</title>
+      </circle>
     );
   });
 };

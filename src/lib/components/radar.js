@@ -28,6 +28,7 @@ const dot = (columns, options) => (chartData, i) => {
   const data = chartData.data;
   const meta = chartData.meta || {};
   const extraProps = options.dotProps(meta);
+  const maxVal = Object.entries(data).reduce((a,e) => e[1] > a ? e[1] : a, 0);
   let mouseEnter = () => {};
   let mouseLeave = () => {};
   if (extraProps.mouseEnter) {
@@ -37,7 +38,7 @@ const dot = (columns, options) => (chartData, i) => {
     mouseLeave = extraProps.mouseLeave;
   }
   return columns.map(col => {
-    const val = data[col.key];
+    const val = data[col.key] / maxVal;
     if ('number' !== typeof val) {
       throw new Error(`Data set ${i} is invalid.`);
     }
@@ -51,7 +52,7 @@ const dot = (columns, options) => (chartData, i) => {
         onMouseEnter={() => mouseEnter({ key: col.key, value: val, idx: i })}
         onMouseLeave={() => mouseLeave({})}
       >
-        <title>{val}</title>
+        <title>{val * maxVal}</title>
       </circle>
     );
   });
@@ -62,12 +63,14 @@ const shape = (columns, options, series) => (chartData, i) => {
   const meta = chartData.meta || {};
   series = series || [];
   const extraProps = options.shapeProps(meta);
+  const maxVal = Object.entries(data).reduce((a,e) => e[1] > a ? e[1] : a, 0);
   return (
     <path
       key={`shape-${i}`}
       d={options.smoothing(
         columns.map(col => {
-          const val = data[col.key];
+          const val = data[col.key] / maxVal;
+
           if ('number' !== typeof val) {
             throw new Error(`Data set ${i} is invalid.`);
           }

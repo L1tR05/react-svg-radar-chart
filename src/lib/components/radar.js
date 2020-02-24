@@ -24,11 +24,11 @@ const axis = options => (col, i) => (
   />
 );
 
-const dot = (columns, options) => (chartData, i) => {
+const dot = (columns, options, maxValue) => (chartData, i) => {
   const data = chartData.data;
   const meta = chartData.meta || {};
   const extraProps = options.dotProps(meta);
-  const maxVal = Object.entries(data).reduce((a,e) => e[1] > a ? e[1] : a, 0);
+  maxValue = maxValue || 1;
   let mouseEnter = () => {};
   let mouseLeave = () => {};
   if (extraProps.mouseEnter) {
@@ -38,7 +38,7 @@ const dot = (columns, options) => (chartData, i) => {
     mouseLeave = extraProps.mouseLeave;
   }
   return columns.map(col => {
-    const val = data[col.key] / maxVal;
+    const val = data[col.key] / maxValue;
     if ('number' !== typeof val) {
       throw new Error(`Data set ${i} is invalid.`);
     }
@@ -48,28 +48,29 @@ const dot = (columns, options) => (chartData, i) => {
         key={`dot-${col.key}-${val}`}
         cx={polarToX(col.angle, (val * options.chartSize) / 2)}
         cy={polarToY(col.angle, (val * options.chartSize) / 2)}
+        r="4"
         className={[extraProps.className, meta.class].join(' ')}
         onMouseEnter={() => mouseEnter({ key: col.key, value: val, idx: i })}
         onMouseLeave={() => mouseLeave({})}
       >
-        <title>{val * maxVal}</title>
+        <title>{val * maxValue}</title>
       </circle>
     );
   });
 };
 
-const shape = (columns, options, series) => (chartData, i) => {
+const shape = (columns, options, series, maxValue) => (chartData, i) => {
   const data = chartData.data;
   const meta = chartData.meta || {};
   series = series || [];
   const extraProps = options.shapeProps(meta);
-  const maxVal = Object.entries(data).reduce((a,e) => e[1] > a ? e[1] : a, 0);
+  maxValue = maxValue || 1;
   return (
     <path
       key={`shape-${i}`}
       d={options.smoothing(
         columns.map(col => {
-          const val = data[col.key] / maxVal;
+          const val = data[col.key] / maxValue;
 
           if ('number' !== typeof val) {
             throw new Error(`Data set ${i} is invalid.`);
@@ -121,7 +122,10 @@ const render = (captions, chartData, options = {}, series) => {
     throw new Error('data must be an array');
   }
   options.chartSize = options.size / options.zoomDistance;
-
+  const maxVal = chartData.reduce((b,d) => { 
+    let val = Object.entries(d.data).reduce((a,e) => e[1] > a ? e[1] : a, 0)
+    return val > b ? val : b
+  },0);
   const columns = Object.keys(captions).map((key, i, all) => {
     return {
       key,
@@ -130,13 +134,13 @@ const render = (captions, chartData, options = {}, series) => {
     };
   });
   const groups = [
-    <g key={`g-groups}`}>{chartData.map(shape(columns, options, series))}</g>
+    <g key={`g-groups}`}>{chartData.map(shape(columns, options, series, maxVal))}</g>
   ];
   if (options.captions) {
     groups.push(<g key={`poly-captions`}>{columns.map(caption(options))}</g>);
   }
   if (options.dots) {
-    groups.push(<g key={`g-dots`}>{chartData.map(dot(columns, options))}</g>);
+    groups.push(<g key={`g-dots`}>{chartData.map(dot(columns, options, maxVal))}</g>);
   }
   if (options.axes) {
     groups.unshift(<g key={`group-axes`}>{columns.map(axis(options))}</g>);
